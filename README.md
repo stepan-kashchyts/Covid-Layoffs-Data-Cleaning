@@ -27,6 +27,7 @@ INSERT INTO `layoffs_staging`
 SELECT *
 FROM `layoffs`;
 ```
+
 2. **Removing Duplicates**
 ```SQL
 WITH duplicates_CTE AS (
@@ -39,6 +40,7 @@ WITH duplicates_CTE AS (
 DELETE FROM `duplicates_CTE`
 WHERE `row_num` > 1;
 ```
+
 3. **Standardizing Data:**
 ```SQL
 -- Remove extra spaces from company names
@@ -54,18 +56,27 @@ UPDATE `layoffs_staging2` SET `country` = TRIM(TRAILING '.' FROM `country`) WHER
 UPDATE `layoffs_staging2` SET `date` = STR_TO_DATE(`date`, '%m/%d/%Y');
 ALTER TABLE `layoffs_staging2` MODIFY COLUMN `date` DATE;
 ```
+
 4. **Handle Null/Blank Values:**
 ```SQL
-DELETE FROM `layoffs_staging2` WHERE `total_laid_off` IS NULL AND `percentage_laid_off` IS NULL;
+DELETE FROM `layoffs_staging2`
+WHERE `total_laid_off` IS NULL
+AND `percentage_laid_off` IS NULL;
 
-UPDATE `layoffs_staging2` SET `industry` = NULL WHERE `industry` = '';
+UPDATE `layoffs_staging2`
+SET `industry` = NULL
+WHERE `industry` = '';
 ```
+
 5. **Remove Unnecessary Columns:**
 ```SQL
-    ALTER TABLE `layoffs_staging2` DROP COLUMN `row_num`;
+ALTER TABLE `layoffs_staging2`
+DROP COLUMN `row_num`;
 ```
-Usage
-```
-    Execute the SQL Scripts: Run each script sequentially in your SQL environment to apply the data cleaning transformations.
-    Verify Data: Check the layoffs_staging2 table to ensure that the data has been cleaned and standardized as expected.
-```
+
+## Usage
+
+*Execute the SQL Scripts: Run each script sequentially in your SQL environment to apply the data cleaning transformations.*
+
+*Verify Data: Check the layoffs_staging2 table to ensure that the data has been cleaned and standardized as expected.*
+
