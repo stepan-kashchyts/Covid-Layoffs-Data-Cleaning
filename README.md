@@ -19,14 +19,16 @@ The project includes the following SQL scripts for data cleaning:
 ## Setup
 
 1. **Create Staging Tables**
-```sql
+```SQL
 CREATE TABLE `layoffs_staging`
 LIKE `layoffs`;
 
 INSERT INTO `layoffs_staging`
 SELECT *
 FROM `layoffs`;
-
+```
+2. **Removing Duplicates**
+```SQL
 WITH duplicates_CTE AS (
     SELECT *,
         ROW_NUMBER() OVER (
@@ -37,8 +39,8 @@ WITH duplicates_CTE AS (
 DELETE FROM `duplicates_CTE`
 WHERE `row_num` > 1;
 ```
-Standardizing Data:
-```
+3. **Standardizing Data:**
+```SQL
 -- Remove extra spaces from company names
 UPDATE `layoffs_staging2` SET `company` = TRIM(`company`);
 
@@ -52,14 +54,14 @@ UPDATE `layoffs_staging2` SET `country` = TRIM(TRAILING '.' FROM `country`) WHER
 UPDATE `layoffs_staging2` SET `date` = STR_TO_DATE(`date`, '%m/%d/%Y');
 ALTER TABLE `layoffs_staging2` MODIFY COLUMN `date` DATE;
 ```
-Handle Null/Blank Values:
-```
+4. **Handle Null/Blank Values:**
+```SQL
 DELETE FROM `layoffs_staging2` WHERE `total_laid_off` IS NULL AND `percentage_laid_off` IS NULL;
 
 UPDATE `layoffs_staging2` SET `industry` = NULL WHERE `industry` = '';
 ```
-Remove Unnecessary Columns:
-```
+5. **Remove Unnecessary Columns:**
+```SQL
     ALTER TABLE `layoffs_staging2` DROP COLUMN `row_num`;
 ```
 Usage
